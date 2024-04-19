@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "819423285967",
+    "project_id": "mydocscannerapp",
+    "storage_bucket": "mydocscannerapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819423285967:android:4224f209838e35ac035dba",
+        "android_client_info": {
+          "package_name": "com.laksh.mydocscannerapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_3dZyKjqcBGxw5mI6V4ZEwTFhGW41gk0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
