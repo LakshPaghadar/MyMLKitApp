@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+
 import com.laksh.mydocscannerapp.composescreen.TextRecognizer
 import com.laksh.mydocscannerapp.ui.theme.MyDocScannerAppTheme
 import com.laksh.mydocscannerapp.ui.theme.Pink80
@@ -62,7 +63,7 @@ class MainActivity : ComponentActivity() {
 
 //@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun GreetingPreview(myNavController:NavController) {
+fun GreetingPreview(myNavController: NavController) {
     MyDocScannerAppTheme {
         Column {
             Spacer(modifier = Modifier.size(15.dp))
