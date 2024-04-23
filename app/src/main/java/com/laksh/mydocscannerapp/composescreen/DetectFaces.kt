@@ -16,7 +16,9 @@ import com.laksh.mydocscannerapp.composescreen.BaseTopAppBar
 fun DetectFaces() {
     Scaffold(
         topBar = {
-            BaseTopAppBar(title = "Detect Faces")
+            BaseTopAppBar(title = "Detect Faces"){
+
+            }
         },
         content = { it->
             ScrollContent(it)

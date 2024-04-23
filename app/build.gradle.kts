@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.camera.core)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -81,4 +82,13 @@ dependencies {
 
     //camera permission
     implementation ("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
+
+    //Ml kit
+    implementation (libs.google.firebase.ml.vision)
+
+    //ML KIT text recognizer
+    implementation(libs.play.services.mlkit.text.recognition.common)
+    implementation(libs.play.services.mlkit.text.recognition)
+    
+
 }

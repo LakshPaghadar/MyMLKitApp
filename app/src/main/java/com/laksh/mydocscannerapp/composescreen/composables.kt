@@ -15,7 +15,7 @@ import com.laksh.mydocscannerapp.ui.theme.Pink80
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BaseTopAppBar(title:String,/*myNavController: NavController*/) {
+fun BaseTopAppBar(title:String,callBack:()->Unit) {
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Pink80,
@@ -23,9 +23,7 @@ fun BaseTopAppBar(title:String,/*myNavController: NavController*/) {
         ),
         title = { Text(text = title) },
         navigationIcon = {
-            IconButton(onClick = {
-                //myNavController.popBackStack()
-            }) {
+            IconButton(onClick = callBack) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBack,
                     contentDescription = "Localized description",

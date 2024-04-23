@@ -16,7 +16,9 @@ import com.laksh.mydocscannerapp.composescreen.BaseTopAppBar
 fun LabelImages() {
     Scaffold(
         topBar = {
-            BaseTopAppBar(title = "Label Images")
+            BaseTopAppBar(title = "Label Images"){
+
+            }
         },
         content = { it->
             ScrollContent(it)

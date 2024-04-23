@@ -16,7 +16,9 @@ import com.laksh.mydocscannerapp.composescreen.BaseTopAppBar
 fun ScanBarcodes() {
     Scaffold(
         topBar = {
-            BaseTopAppBar(title = "Scan Barcodes")
+            BaseTopAppBar(title = "Scan Barcodes"){
+
+            }
         },
         content = { it->
             ScrollContent(it)

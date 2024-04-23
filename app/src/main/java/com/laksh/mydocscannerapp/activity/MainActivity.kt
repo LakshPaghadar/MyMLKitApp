@@ -25,9 +25,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.laksh.mydocscannerapp.composescreen.ScannedTextScreen
 
 import com.laksh.mydocscannerapp.composescreen.TextRecognizer
 import com.laksh.mydocscannerapp.ui.theme.MyDocScannerAppTheme
@@ -49,10 +52,17 @@ class MainActivity : ComponentActivity() {
                         startDestination = "main"
                     ) {
                         composable("main") { GreetingPreview(myNavController) }
-                        composable("text_recognizer") { TextRecognizer(/*myNavController*/) }
+                        composable("text_recognizer") { TextRecognizer(myNavController) }
                         composable("detect_faces") { DetectFaces() }
                         composable("scan_barcodes") { ScanBarcodes() }
                         composable("label_images") { LabelImages() }
+                        composable(
+                            "scanned_text/{text}",
+                            arguments = listOf(navArgument("text") { type = NavType.StringType })
+                        ) {
+                            val textScanned = it.arguments?.getString("text")
+                            ScannedTextScreen(myNavController, textScanned)
+                        }
                     }
                 }
             }
