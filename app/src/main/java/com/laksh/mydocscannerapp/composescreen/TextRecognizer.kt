@@ -89,7 +89,8 @@ fun CheckPermission(myNavController: NavController) {
         rememberPermissionState(android.Manifest.permission.CAMERA)
     Log.e("PERMISSION", cameraPermissionState.status.toString())
     if (cameraPermissionState.status.isGranted) {
-        CameraScreen(myNavController)
+        CameraContent(myNavController)
+        //CameraScreen(myNavController)
     } else if (!cameraPermissionState.status.shouldShowRationale) {
         Log.e("PERMISSION", cameraPermissionState.status.shouldShowRationale.toString())
         NoPermissionScreen(cameraPermissionState.status.shouldShowRationale) {
@@ -100,11 +101,6 @@ fun CheckPermission(myNavController: NavController) {
             cameraPermissionState.launchPermissionRequest()
         }
     }
-}
-
-@Composable
-fun CameraScreen(myNavController: NavController) {
-    CameraContent(myNavController)
 }
 
 @Composable
@@ -158,14 +154,6 @@ fun CameraContent(myNavController: NavController) {
                     }.also { previewView ->
                         camController.bindToLifecycle(lifecycleOwner)
                         previewView.controller = camController
-                        /*startRecognizer(
-                            context,
-                            camController,
-                            lifecycleOwner,
-                            previewView,
-                        ) { recognizedText ->
-                            Toast.makeText(context, recognizedText, Toast.LENGTH_SHORT).show()
-                        }*/
                     }
                 })
         }

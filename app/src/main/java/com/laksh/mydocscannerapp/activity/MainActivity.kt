@@ -1,6 +1,6 @@
 package com.laksh.mydocscannerapp.activity
 
-import DetectFaces
+
 import LabelImages
 import ScanBarcodes
 import android.os.Bundle
@@ -30,9 +30,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.laksh.mydocscannerapp.composescreen.DetectFaces
+import com.laksh.mydocscannerapp.composescreen.LabelListScreen
 import com.laksh.mydocscannerapp.composescreen.ScannedTextScreen
 
 import com.laksh.mydocscannerapp.composescreen.TextRecognizer
+import com.laksh.mydocscannerapp.face.DetectFaces2
+import com.laksh.mydocscannerapp.face.DetectedFaceScreen
 import com.laksh.mydocscannerapp.ui.theme.MyDocScannerAppTheme
 import com.laksh.mydocscannerapp.ui.theme.Pink80
 
@@ -53,15 +57,26 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable("main") { GreetingPreview(myNavController) }
                         composable("text_recognizer") { TextRecognizer(myNavController) }
-                        composable("detect_faces") { DetectFaces() }
+                        composable("detect_faces") { DetectFaces2() }
                         composable("scan_barcodes") { ScanBarcodes() }
-                        composable("label_images") { LabelImages() }
+                        composable("label_images") { LabelImages(myNavController) }
                         composable(
                             "scanned_text/{text}",
                             arguments = listOf(navArgument("text") { type = NavType.StringType })
                         ) {
                             val textScanned = it.arguments?.getString("text")
                             ScannedTextScreen(myNavController, textScanned)
+                        }
+                        composable(
+                            "label_list/{labels_list}/{image}",
+                            arguments = listOf(
+                                navArgument("labels_list") { type = NavType.StringArrayType },
+                                navArgument("image") { type = NavType.StringType }
+                            )
+                            ){
+                            val labels_list = it.arguments?.getStringArray("labels_list")
+                            val image = it.arguments?.getString("image")
+                            LabelListScreen(labels_list = labels_list, image = image)
                         }
                     }
                 }

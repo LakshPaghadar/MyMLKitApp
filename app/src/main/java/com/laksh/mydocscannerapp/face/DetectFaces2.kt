@@ -1,21 +1,22 @@
-package com.laksh.mydocscannerapp.composescreen
+package com.laksh.mydocscannerapp.face
 
 import android.Manifest
-import android.graphics.Rect
 import android.util.Log
-import android.util.Size
+import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -24,12 +25,14 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,12 +45,17 @@ import com.google.accompanist.permissions.PermissionState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import com.google.mlkit.vision.face.Face
+import com.laksh.mydocscannerapp.R
+import com.laksh.mydocscannerapp.composescreen.BaseTopAppBar
+import com.laksh.mydocscannerapp.composescreen.NoPermissionScreen
 import com.laksh.mydocscannerapp.ui.theme.Pink80
 import com.laksh.mydocscannerapp.utils.FaceDetectionUnit
 
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun DetectFaces() {
+fun DetectFaces2() {
     Scaffold(
         topBar = {
             BaseTopAppBar(title = "Detect Faces") {
@@ -69,7 +77,7 @@ private fun ScrollContent(paddingValues: PaddingValues/*,myNavController: NavCon
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        com.laksh.mydocscannerapp.face.CheckPermission()
+        CheckPermission()
     }
 }
 
@@ -79,7 +87,7 @@ fun CheckPermission() {
     val cameraPermissionState: PermissionState =
         rememberPermissionState(Manifest.permission.CAMERA)
     if (cameraPermissionState.status.isGranted) {
-        com.laksh.mydocscannerapp.face.CameraContent()
+        CameraContent()
     } else if (!cameraPermissionState.status.shouldShowRationale) {
         Log.e("PERMISSION", cameraPermissionState.status.shouldShowRationale.toString())
         NoPermissionScreen(cameraPermissionState.status.shouldShowRationale) {
@@ -96,15 +104,41 @@ fun CheckPermission() {
 fun CameraContent() {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val detectedFaces = remember { mutableStateOf(emptyList<Rect>()) }
+
+    val camController = remember {
+        LifecycleCameraController(context)
+    }
+    camController.cameraSelector=CameraSelector.Builder()
+        .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
+        .build()
+    val detectedFaces = remember { mutableStateOf(emptyList<Face>()) }
+    val isImageTaken = remember { mutableStateOf(false) }
+    lateinit var imageBitmap:ImageBitmap
     val canvasSize = remember { mutableStateOf(androidx.compose.ui.geometry.Size(0.0f, 0.0f)) }
     val camProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {},
+                onClick = {
+                    camController.takePicture(
+                        ContextCompat.getMainExecutor(context),
+                        object : ImageCapture.OnImageCapturedCallback() {
+                            override fun onCaptureSuccess(image: ImageProxy) {
+                                imageBitmap=image.toBitmap().asImageBitmap()
+                                FaceDetectionUnit {
+                                    detectedFaces.value=it
+                                    isImageTaken.value=true
+                                }.getFacesFromImageCapture(image)
+                                super.onCaptureSuccess(image)
+                            }
+
+                            override fun onError(exception: ImageCaptureException) {
+                                super.onError(exception)
+                            }
+                        }
+                    )
+                },
                 containerColor = Pink80
             ) {
                 Icon(Icons.Filled.Add, "")
@@ -122,45 +156,25 @@ fun CameraContent() {
                     .size(300.dp, 400.dp),
                 contentAlignment = Alignment.Center
             ) {
-                AndroidView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    factory = { context ->
-                        val previewView = PreviewView(context)
-                        val executor = ContextCompat.getMainExecutor(context)
-                        camProviderFuture.addListener({
-                            val camProvider = camProviderFuture.get()
-                            val preview = androidx.camera.core.Preview.Builder().build().also {
-                                it.setSurfaceProvider(previewView.surfaceProvider)
+                if (isImageTaken.value){
+                    CanvasDraw(detectedFaces.value,imageBitmap)
+                } else {
+                    AndroidView(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        factory = { context ->
+                            PreviewView(context).apply {
+                                layoutParams =
+                                    LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 300)
+                                scaleType = PreviewView.ScaleType.FILL_START
+                                setBackgroundColor(context.getColor(R.color.teal_700))
+                            }.also { previewView ->
+                                camController.bindToLifecycle(lifecycleOwner)
+                                previewView.controller = camController
                             }
-                            val camSelector = CameraSelector.Builder()
-                                .requireLensFacing(CameraSelector.LENS_FACING_FRONT)
-                                .build()
-
-                            val imageAnalysis = ImageAnalysis.Builder()
-                                .setTargetResolution(Size(previewView.width, previewView.height))
-                                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                                .setImageQueueDepth(10)
-                                .build()
-                                .apply {
-                                    setAnalyzer(executor, FaceDetectionUnit { dFaces ->
-                                        //detectedFaces.value = dFaces
-                                    })
-                                }
-                            camProvider.unbindAll()
-                            camProvider.bindToLifecycle(
-                                lifecycleOwner,
-                                camSelector,
-                                preview,
-                                imageAnalysis
-                            )
-
-                        }, executor)
-                        previewView
-                    }
-                )
-                FaceDetectionCanvas(detectedFaces, canvasSize)
+                        })
+                }
             }
         }
     }
@@ -168,39 +182,29 @@ fun CameraContent() {
 
 
 @Composable
-fun FaceDetectionCanvas(
-    detectedFaces: MutableState<List<Rect>>,
-    canvasSize: MutableState<androidx.compose.ui.geometry.Size>,
-) {
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        drawRect(color = Color.Black.copy(0.5f), size = size)
-        canvasSize.value = size
-        //Log.e("SIZE_Canvas","height : ${size.height} & width : ${size.width}")
-    }
-    FaceDetectionOverlay(detectedFaces.value, canvasSize.value)
-}
+fun CanvasDraw(faces: List<Face>, imageBitmap:ImageBitmap){
+        Canvas(modifier = Modifier.size(300.dp, 400.dp)) {
+            // Your image bitmap
+            val imageWidth = imageBitmap.width
+            val imageHeight = imageBitmap.height
 
-@Composable
-fun FaceDetectionOverlay(detectedFaces: List<Rect>, canvasSize: androidx.compose.ui.geometry.Size) {
-    Box(
-        modifier = Modifier
-            .size(300.dp, 400.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        for (faceRect in detectedFaces) {
-            val scaledX = faceRect.left * canvasSize.width / 1000f // Scale based on canvas size
-            val scaledY = faceRect.top * canvasSize.height / 1000f // Scale based on canvas size
-            val scaledWidth = (faceRect.right - faceRect.left) * canvasSize.width / 1000f
-            val scaledHeight = (faceRect.bottom - faceRect.top) * canvasSize.height / 1000f
+            drawImage(imageBitmap)
 
-            Box(
-                modifier = Modifier
-                    //.fillMaxSize()
-                    .offset(x = scaledX.dp, y = scaledY.dp) // Use scaled positions
-                    .size(width = scaledWidth.dp, height = scaledHeight.dp)
-                    .background(Color.Red.copy(alpha = 0.5f)) // Semi-transparent red highlight
-            )
+            faces.forEach { face ->
+                val landmarks = face.allLandmarks
+                landmarks.forEach { landmark ->
+                    val normalizedX = landmark.position.x
+                    val normalizedY = landmark.position.y
+                    val x = normalizedX * imageWidth
+                    val y = normalizedY * imageHeight
+                    drawCircle(
+                        color = Color.Red,
+                        radius = 5f,
+                        center = Offset(x, y)
+                    )
+                }
+            }
         }
-    }
 }
+
 
