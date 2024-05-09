@@ -116,7 +116,9 @@ fun CameraContent(myNavController: NavController) {
                         object : ImageCapture.OnImageCapturedCallback() {
                             override fun onCaptureSuccess(image: ImageProxy) {
                                 ImageLabelUtils {
-                                    myNavController.navigate("label_list/${it}/${image.toString()}")
+                                    Log.e("ARRAY_LIST 1 ", "$it ")
+                                    val a=it.joinToString(",")
+                                    myNavController.navigate("label_list/${a}/${image}")
                                 }.getLabelsFromImageCapture(image)
                                 super.onCaptureSuccess(image)
                             }

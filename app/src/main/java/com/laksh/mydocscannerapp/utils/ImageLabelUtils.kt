@@ -17,7 +17,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
 
-class ImageLabelUtils(val onLabelDetect: (Array<String>) -> Unit): ImageAnalysis.Analyzer {
+class ImageLabelUtils(val onLabelDetect: (ArrayList<String>) -> Unit): ImageAnalysis.Analyzer {
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val DELAY_TIME = 1000L
     @OptIn(ExperimentalGetImage::class)
@@ -32,13 +32,13 @@ class ImageLabelUtils(val onLabelDetect: (Array<String>) -> Unit): ImageAnalysis
                     Log.e("LABELS","1")
                     labeler.process(image)
                         .addOnSuccessListener { labels->
-                            val array= arrayOf<String>()
+                            val array= arrayListOf<String>()
                             for (label in labels) {
                                 val text = label.text
                                 val confidence = label.confidence
                                 val index = label.index
                                 Log.e("LABELS",text)
-                                array.plus(text)
+                                array.add(text)
                             }
                             onLabelDetect.invoke(array)
                             imageProxy.close()
@@ -75,13 +75,13 @@ class ImageLabelUtils(val onLabelDetect: (Array<String>) -> Unit): ImageAnalysis
                     val labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS)
                     labeler.process(image)
                         .addOnSuccessListener { labels->
-                            val array= arrayOf<String>()
+                            val array= arrayListOf<String>()
                             for (label in labels) {
                                 val text = label.text
                                 val confidence = label.confidence
                                 val index = label.index
                                 Log.e("LABELS",text)
-                                array.plus(text)
+                                array.add(text)
                             }
                             onLabelDetect.invoke(array)
                             imageProxy.close()

@@ -70,13 +70,13 @@ class MainActivity : ComponentActivity() {
                         composable(
                             "label_list/{labels_list}/{image}",
                             arguments = listOf(
-                                navArgument("labels_list") { type = NavType.StringArrayType },
+                                navArgument("labels_list") { type = NavType.StringType },
                                 navArgument("image") { type = NavType.StringType }
                             )
                             ){
-                            val labels_list = it.arguments?.getStringArray("labels_list")
+                            val labels_list = it.arguments?.getString("labels_list")
                             val image = it.arguments?.getString("image")
-                            LabelListScreen(labels_list = labels_list, image = image)
+                            LabelListScreen(image = image,labels_list = labels_list)
                         }
                     }
                 }
