@@ -14,10 +14,10 @@ import androidx.navigation.NavController
 
 
 @Composable
-fun ScannedTextScreen(myNavController: NavController,textScanned:String?) {
+fun BarcodeDetailsScreen(myNavController: NavController,type:String?,value:String?) {
     Scaffold(
         topBar = {
-            BaseTopAppBar(title = "Scanned Text") {
+            BaseTopAppBar(title = "Barcode Value") {
                 myNavController.popBackStack()
             }
         },
@@ -29,7 +29,8 @@ fun ScannedTextScreen(myNavController: NavController,textScanned:String?) {
                         .fillMaxSize(),
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text(text = "$textScanned")
+                    Text(text = "Type : $type")
+                    Text(text = "Value : $value")
                 }
             }
         }

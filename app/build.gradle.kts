@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.laksh.mydocscannerapp"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -66,6 +66,14 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.play.services.mlkit.barcode.scanning)
+
+    //Constraint Layout in compose
+    implementation(libs.androidx.constraintlayout.compose)
+    //Material view in compose
+    implementation(libs.androidx.compose.material)
+
+
 
 
     testImplementation(libs.junit)
@@ -104,6 +112,12 @@ dependencies {
 
     //Labeling
     implementation("com.google.mlkit:image-labeling:17.0.8")
+
+    //BarCode
+    implementation("com.google.mlkit:barcode-scanning:17.2.0")
+
+    //image loader
+    implementation("io.coil-kt:coil-compose:2.0.0-rc01")
 
 
 }

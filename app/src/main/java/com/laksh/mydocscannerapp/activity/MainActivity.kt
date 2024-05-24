@@ -30,13 +30,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.laksh.mydocscannerapp.composescreen.DetectFaces
+import com.laksh.mydocscannerapp.composescreen.BarcodeDetailsScreen
 import com.laksh.mydocscannerapp.composescreen.LabelListScreen
 import com.laksh.mydocscannerapp.composescreen.ScannedTextScreen
-
 import com.laksh.mydocscannerapp.composescreen.TextRecognizer
-import com.laksh.mydocscannerapp.face.DetectFaces2
-import com.laksh.mydocscannerapp.face.DetectedFaceScreen
+import com.laksh.mydocscannerapp.face.DetectFaces
 import com.laksh.mydocscannerapp.ui.theme.MyDocScannerAppTheme
 import com.laksh.mydocscannerapp.ui.theme.Pink80
 
@@ -57,8 +55,8 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable("main") { GreetingPreview(myNavController) }
                         composable("text_recognizer") { TextRecognizer(myNavController) }
-                        composable("detect_faces") { DetectFaces2() }
-                        composable("scan_barcodes") { ScanBarcodes() }
+                        composable("detect_faces") { DetectFaces(myNavController) }
+                        composable("scan_barcodes") { ScanBarcodes(myNavController) }
                         composable("label_images") { LabelImages(myNavController) }
                         composable(
                             "scanned_text/{text}",
@@ -73,10 +71,25 @@ class MainActivity : ComponentActivity() {
                                 navArgument("labels_list") { type = NavType.StringType },
                                 navArgument("image") { type = NavType.StringType }
                             )
-                            ){
+                        ) {
                             val labels_list = it.arguments?.getString("labels_list")
                             val image = it.arguments?.getString("image")
-                            LabelListScreen(image = image,labels_list = labels_list)
+                            LabelListScreen(myNavController = myNavController,image = image, labels_list = labels_list)
+                        }
+                        composable(
+                            "barcode_details/{type}/{value}",
+                            arguments = listOf(
+                                navArgument("type") { type = NavType.StringType },
+                                navArgument("value") { type = NavType.StringType },
+                            )
+                        ) {
+                            val type1 = it.arguments?.getString("type")
+                            val value1 = it.arguments?.getString("value")
+                            BarcodeDetailsScreen(
+                                myNavController = myNavController,
+                                type = type1,
+                                value = value1
+                            )
                         }
                     }
                 }
@@ -86,7 +99,6 @@ class MainActivity : ComponentActivity() {
 }
 
 
-//@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GreetingPreview(myNavController: NavController) {
     MyDocScannerAppTheme {
@@ -107,11 +119,11 @@ fun GreetingPreview(myNavController: NavController) {
                             onClick = {
                                 when (index) {
                                     0 -> {
-                                        myNavController.navigate("text_recognizer")
+                                        myNavController.navigate("detect_faces")
                                     }
 
                                     1 -> {
-                                        myNavController.navigate("detect_faces")
+                                        myNavController.navigate("text_recognizer")
                                     }
 
                                     2 -> {
@@ -135,8 +147,8 @@ fun GreetingPreview(myNavController: NavController) {
 
 fun getMenuList(): ArrayList<String> {
     val list = ArrayList<String>()
-    list.add("Text Recognize")
     list.add("Detect Faces")
+    list.add("Text Recognize")
     list.add("Scan Barcodes")
     list.add("Label Images")
     return list

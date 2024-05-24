@@ -8,6 +8,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.label.ImageLabeling
+import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -15,7 +16,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-import com.google.mlkit.vision.label.defaults.ImageLabelerOptions
 
 class ImageLabelUtils(val onLabelDetect: (ArrayList<String>) -> Unit): ImageAnalysis.Analyzer {
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
