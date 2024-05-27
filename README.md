@@ -13,10 +13,10 @@ This app demonstrates the integration of ML Kit in a Jetpack Compose Android app
 ## Features
 
 
-### 1. Jetpack Compose for UI
+### 1. [Jetpack Compose for UI](https://developer.android.com/develop/ui/compose) 
 Jetpack Compose is utilized for building the user interface, offering a modern, declarative approach to UI development.
 
-### 2. Camera Preview and Image Capture
+### 2. [Camera Preview and Image Capture](https://developer.android.com/media/camera/camerax)
 CameraX is used for camera preview and image capture, providing a seamless and modern camera experience within the app.
 
 ### 3. Face Detection
@@ -35,5 +35,5 @@ ML Kit's Image Labeling API is used to identify objects in images and assign lab
 
 ### Prerequisites
 - Android Studio Bumblebee | 2021.1.1 Patch 3 or later
-- Kotlin 1.5.30 or later
-- Jetpack Compose 1.0.5 or later
+- Kotlin 1.9.0 or later
+- Jetpack Compose 1.3.1 or later
