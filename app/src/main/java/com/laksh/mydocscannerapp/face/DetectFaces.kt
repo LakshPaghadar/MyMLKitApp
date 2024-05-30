@@ -67,6 +67,7 @@ private fun ScrollContent(paddingValues: PaddingValues/*,myNavController: NavCon
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         CheckPermission()
     }
 }
